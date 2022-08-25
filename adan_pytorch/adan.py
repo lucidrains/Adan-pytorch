@@ -9,7 +9,7 @@ class Adan(Optimizer):
         self,
         params,
         lr = 1e-3,
-        betas = (0.1, 0.1, 0.001),
+        betas = (0.02, 0.08, 0.01),
         eps = 1e-8,
         weight_decay = 0
     ):
@@ -48,16 +48,13 @@ class Adan(Optimizer):
 
                 if len(state) == 0:
                     state['step'] = 0
-                    state['m'] = grad.clone()
+                    state['m'] = torch.zeros_like(grad)
                     state['v'] = torch.zeros_like(grad)
-                    state['n'] = (grad ** 2)
+                    state['n'] = torch.zeros_like(grad)
 
                 step, m, v, n = state['step'], state['m'], state['v'], state['n']
 
-                zeroth_step = step == 0
-                first_step = step == 1
-
-                if not zeroth_step:
+                if step > 0:
                     prev_grad = state['prev_grad']
 
                     # main algorithm
@@ -66,10 +63,7 @@ class Adan(Optimizer):
 
                     grad_diff = grad - prev_grad
 
-                    if not first_step:
-                        v.mul_(1 - beta2).add_(grad_diff, alpha = beta2)
-                    else:
-                        v.add_(grad_diff)
+                    v.mul_(1 - beta2).add_(grad_diff, alpha = beta2)
 
                     next_n = (grad + (1 - beta2) * grad_diff) ** 2
 
