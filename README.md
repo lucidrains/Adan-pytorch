@@ -4,6 +4,8 @@
 
 Implementation of the <a href="https://arxiv.org/abs/2208.06677">Adan</a> (ADAptive Nesterov momentum algorithm) Optimizer in Pytorch.
 
+Explanation from <a href="https://twitter.com/davisblalock/status/1561976182567870465">Davis Blalock</a>
+
 ## Install
 
 ```bash
