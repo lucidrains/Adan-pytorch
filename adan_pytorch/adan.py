@@ -11,7 +11,8 @@ class Adan(Optimizer):
         lr = 1e-3,
         betas = (0.02, 0.08, 0.01),
         eps = 1e-8,
-        weight_decay = 0
+        weight_decay = 0,
+        restart_cond: callable = None
     ):
         assert len(betas) == 3
 
@@ -19,7 +20,8 @@ class Adan(Optimizer):
             lr = lr,
             betas = betas,
             eps = eps,
-            weight_decay = weight_decay
+            weight_decay = weight_decay,
+            restart_cond = restart_cond
         )
 
         super().__init__(params, defaults)
@@ -36,6 +38,7 @@ class Adan(Optimizer):
             beta1, beta2, beta3 = group['betas']
             weight_decay = group['weight_decay']
             eps = group['eps']
+            restart_cond = group['restart_cond']
 
             for p in group['params']:
                 if not exists(p.grad):
@@ -72,11 +75,23 @@ class Adan(Optimizer):
 
                 # gradient step
 
-                weighted_step_size = lr / (n + eps).sqrt()
-                
-                denom = 1 + weight_decay * lr
+                def grad_step_(data, m, v, n):
+                    weighted_step_size = lr / (n + eps).sqrt()
 
-                data.addcmul_(weighted_step_size, (m + (1 - beta2) * v), value = -1.).div_(denom)
+                    denom = 1 + weight_decay * lr
+
+                    data.addcmul_(weighted_step_size, (m + (1 - beta2) * v), value = -1.).div_(denom)
+
+                grad_step_(data, m, v, n)
+
+                # restart condition
+
+                if exists(restart_cond) and restart_cond(state):
+                    m.data.copy_(grad)
+                    v.zero_()
+                    n.data.copy_(grad ** 2)
+
+                    grad_step_(data, m, v, n)
 
                 # set new incremented step
 
