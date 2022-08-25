@@ -48,11 +48,12 @@ class Adan(Optimizer):
 
                 if len(state) == 0:
                     state['step'] = 0
+                    state['prev_grad'] = torch.zeros_like(grad)
                     state['m'] = torch.zeros_like(grad)
                     state['v'] = torch.zeros_like(grad)
                     state['n'] = torch.zeros_like(grad)
 
-                step, m, v, n = state['step'], state['m'], state['v'], state['n']
+                step, m, v, n, prev_grad = state['step'], state['m'], state['v'], state['n'], state['prev_grad']
 
                 if step > 0:
                     prev_grad = state['prev_grad']
@@ -79,7 +80,7 @@ class Adan(Optimizer):
 
                 # set new incremented step
 
-                state['prev_grad'] = grad.clone()
+                prev_grad.copy_(grad)
                 state['step'] += 1
 
         return loss
