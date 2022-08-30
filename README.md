@@ -31,9 +31,9 @@ model = torch.nn.Sequential(
 
 optim = Adan(
     model.parameters(),
-    lr = 1e-3,                 # learning rate
-    betas = (0.1, 0.1, 0.001), # beta 1-2-3 as described in paper
-    weight_decay = 0.          # weight decay
+    lr = 1e-3,                  # learning rate (can be much higher than Adam, up to 5-10x)
+    betas = (0.02, 0.08, 0.01), # beta 1-2-3 as described in paper - author says most sensitive to beta3 tuning
+    weight_decay = 0.02         # weight decay 0.02 is optimal per author
 )
 
 # train

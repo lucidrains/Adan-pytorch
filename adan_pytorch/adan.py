@@ -78,17 +78,12 @@ class Adan(Optimizer):
 
                 step += 1
 
-                bias_correct1, bias_correct2, bias_correct3 = map(lambda n: 1 - (1 - n) ** step, (beta1, beta2, beta3))
-
-                sqrt_bias_correct3 = math.sqrt(bias_correct3)
-
-                correct_m = sqrt_bias_correct3 / bias_correct1  # correction term for m
-                correct_v = sqrt_bias_correct3 / bias_correct2  # correction term for v
+                correct_m, correct_v, correct_n = map(lambda n: 1 / (1 - (1 - n) ** step), (beta1, beta2, beta3))
 
                 # gradient step
 
                 def grad_step_(data, m, v, n):
-                    weighted_step_size = lr / (n + eps).sqrt()
+                    weighted_step_size = lr / (n * correct_n).sqrt().add_(eps)
 
                     denom = 1 + weight_decay * lr
 
