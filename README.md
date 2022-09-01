@@ -6,6 +6,8 @@ Implementation of the <a href="https://arxiv.org/abs/2208.06677">Adan</a> (ADApt
 
 Explanation from <a href="https://twitter.com/davisblalock/status/1561976182567870465">Davis Blalock</a>
 
+<a href="https://github.com/sail-sg/Adan">Official Adan code</a>
+
 ## Install
 
 ```bash
